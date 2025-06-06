@@ -3,6 +3,9 @@ import App from "../../App.tsx";
 import LoginPage from "../../pages/user/LoginPage.tsx";
 import RegisterPage from "../../pages/user/RegisterPage.tsx";
 import MainPage from "../../pages/user/MainPage.tsx";
+import NewsPage from "../../pages/news/NewsPage.tsx";
+import NewsDetailPage from "../../pages/news/NewsDetailPage.tsx";
+import AddNewsPage from "../../pages/news/AddNewsPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -12,6 +15,9 @@ export const router = createBrowserRouter([
             {path: 'login', element: <LoginPage />},
             {path: 'register', element: <RegisterPage />},
             {path: 'main', element: <MainPage/>},
+            {path: 'news', element: <NewsPage/>},
+            {path: 'news/add', element: <AddNewsPage/>},
+            {path: 'news/:id', element: <NewsDetailPage/>},
             // {path: 'checkout', element: <Checkout/>},
             // {
             //     path: 'admin',
