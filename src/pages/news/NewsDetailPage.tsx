@@ -11,6 +11,8 @@ interface News {
     createdAt: string;
 }
 
+const STORAGE_KEY = 'news_data';
+
 const NewsDetailPage: FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -19,11 +21,12 @@ const NewsDetailPage: FC = () => {
 
     useEffect(() => {
         // Получаем данные из localStorage
-        const currentNews = localStorage.getItem('currentNews');
-        if (currentNews) {
-            const newsData = JSON.parse(currentNews);
-            if (newsData.id === id) {
-                setNews(newsData);
+        const savedNews = localStorage.getItem(STORAGE_KEY);
+        if (savedNews) {
+            const newsArray = JSON.parse(savedNews);
+            const currentNews = newsArray.find((item: News) => item.id === id);
+            if (currentNews) {
+                setNews(currentNews);
             }
         }
     }, [id]);
@@ -33,32 +36,26 @@ const NewsDetailPage: FC = () => {
             const updatedNews = { ...news, ...data };
             setNews(updatedNews);
             
-            // Обновляем данные в localStorage
-            localStorage.setItem('currentNews', JSON.stringify(updatedNews));
-            
             // Обновляем данные в общем списке новостей
-            const savedNews = localStorage.getItem('news');
+            const savedNews = localStorage.getItem(STORAGE_KEY);
             if (savedNews) {
                 const newsArray = JSON.parse(savedNews);
                 const updatedArray = newsArray.map((item: News) => 
                     item.id === news.id ? updatedNews : item
                 );
-                localStorage.setItem('news', JSON.stringify(updatedArray));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedArray));
             }
             setIsEditing(false);
         }
     };
 
     const handleDelete = () => {
-        if (news) {
-            // Удаляем новость из localStorage
-            localStorage.removeItem('currentNews');
-            
-            const savedNews = localStorage.getItem('news');
+        if (news && window.confirm('Are you sure you want to delete this news?')) {
+            const savedNews = localStorage.getItem(STORAGE_KEY);
             if (savedNews) {
                 const newsArray = JSON.parse(savedNews);
                 const updatedArray = newsArray.filter((item: News) => item.id !== news.id);
-                localStorage.setItem('news', JSON.stringify(updatedArray));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedArray));
             }
             navigate('/news');
         }
@@ -74,6 +71,17 @@ const NewsDetailPage: FC = () => {
         return (
             <div className="min-h-screen bg-gray-900 text-gray-100">
                 <div className="container mx-auto px-4 py-8">
+                    <div className="flex justify-between items-center mb-8">
+                        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+                            Edit News
+                        </h1>
+                        <button
+                            onClick={() => navigate('/news')}
+                            className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                        >
+                            ← Back to News
+                        </button>
+                    </div>
                     <NewsForm
                         initialData={news}
                         onSubmit={handleEdit}

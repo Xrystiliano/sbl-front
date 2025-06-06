@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import NewsCard from '../../components/news/NewsCard';
 import NewsForm from '../../components/news/NewsForm';
 
@@ -10,10 +10,19 @@ interface News {
     createdAt: string;
 }
 
+const STORAGE_KEY = 'news_data';
+
 const NewsPage: FC = () => {
-    const [news, setNews] = useState<News[]>([]);
+    const [news, setNews] = useState<News[]>(() => {
+        const savedNews = localStorage.getItem(STORAGE_KEY);
+        return savedNews ? JSON.parse(savedNews) : [];
+    });
     const [isAddingNews, setIsAddingNews] = useState(false);
     const [editingNews, setEditingNews] = useState<News | null>(null);
+
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
+    }, [news]);
 
     const handleAddNews = (data: { title: string; description: string; imageUrl: string }) => {
         const newNews: News = {
